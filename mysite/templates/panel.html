@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Homepage{% endblock %}
+
+{% block head-extras %}
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/revista.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/style.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/visualize.css">
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/industrial.css">
+<script type="text/javascript" src="{{STATIC_URL}}js/pestanas.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/visualize.jQuery.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/industrial.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div id="pestanas">
+	<ul>
+	{% for deposito in tanques %}
+		{% if forloop.first %}
+			<li id="pestana{{forloop.counter}}" class="activa"><a href="#">{{deposito.yacimiento}}</a></li>
+		{% else %}
+			<li id="pestana{{forloop.counter}}"><a href="#">{{deposito.yacimiento}}</a></li>
+		{% endif %}
+		<div class="contenedor" style="z-index:{{forloop.revcounter}}" id="contenedor{{forloop.counter}}">
+			<div id="marco">
+				<div class="container-fluid" style="border: 2px dashed #848484;background:#ffffff; padding-bottom:7em">
+				<div class="row">
+					<div class="col-md-4">
+					<h2 style="text-align:center">Configuración actual</h2>
+					<form id="tank{{forloop.counter}}" action="/configurar/{{deposito.id}}" method="POST">{% csrf_token %}
+					<table id="info{{forloop.counter}}" class="table table-striped table-condensed">
+							<tr>
+								<th>Producto</th>
+								<td><input name="producto" class="form-control" type="text" value="{{deposito.producto}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Función</th>
+								<td><input name="funcion" class="form-control" type="text" value="{{deposito.funcion}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Bomba</th>
+								<td><input name="bomba" class="form-control" type="text" value="{{deposito.bomba}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Dosificación</th>
+								<td><input name="dosificacion" class="form-control" type="text" value="{{deposito.dosificacion}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Altura</th>
+								<td><input name="altura" class="form-control" type="text" value="{{deposito.altura}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Caudal</th>
+								<td><input name="caudal" class="form-control" type="text" value="{{deposito.caudal}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Rango lectura</th>
+								<td><input name="lectura" type="text" class="form-control" value="{{deposito.lectura}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Critico</th>
+								<td><input name="critico" class="form-control" type="text" value="{{deposito.critico}}" disabled></td>
+							</tr>
+							<tr>
+								<th>Capacidad</th>
+								<td><input name="capacidad" class="form-control" type="text" value="{{deposito.capacidad}}" disabled></td>
+							</tr>
+						</table>
+					<div class="btn-group pull-right">
+						<button id="btn{{forloop.counter}}" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-pencil"></span> Editar
+						</button>
+						<button type="submit" class="btn btn-default">
+							<span class="glyphicon glyphicon-save" aria-hidden="true"></span> Guardar
+						</button>
+					</div>
+					</form>
+					</div>
+
+					<div style="margin-top:70px" class="col-md-offset-1 col-md-3 medidor">
+						<div id="display{{forloop.counter}}" style="margin-left:53px;margin-top:60px" class="industrial readout size one">
+							<div class="meter green" data-digits="5"></div>
+						</div>
+						<div class="row">
+							<div class="col-md-offset-2 col-md-5">
+								<div style="margin-top:250px">
+
+									<form action="/activar/bomba/{{deposito.id}}">
+										<div id="litros-form-{{forloop.counter}}" class="input-group">
+											<input type="number" class="form-control" name="litros">
+											<span class="input-group-addon">Litros</span>
+										</div>
+										<div class="btn-group pull-right">
+											<button style="margin-top:10px" class="btn btn-default" type="submit">Cargar</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr>
+
+				<div class="row">
+					<div class="col-md-10 col-md-offset-1">
+						<h1>Lecturas anteriores</h1>
+						<div id="myChart{{forloop.counter}}"></div>
+						<table id="myTable{{forloop.counter}}" style="display:none">
+							<caption>Stock</caption>
+							<thead>
+								<tr>
+									<td></td>
+									{% for tanque in lecturas_tanque %}
+										{% for lectura in tanque %}
+											{% if lectura.lector.tanque.yacimiento == deposito.yacimiento %}
+											<th scope="col">{{lectura.fecha|date:"H:i d/m/y"}}</th>
+											{% endif %}
+										{% endfor %}
+									{% endfor %}
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th scope="row">{{lectura.lector.tanque.yacimiento}} en litros</th>
+									{% for tanque in lecturas_tanque %}
+										{% for lectura in tanque %}
+											{% if lectura.lector.tanque.yacimiento == deposito.yacimiento %}
+											<td>{{lectura.stock}}</td>
+											{% endif %}
+										{% endfor %}
+									{% endfor %}
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+	{% endfor %}
+	</ul>
+</div>
+{% endblock %}
+
+{% block javascript-extras %}
+	$("table[id ^= myTable]").each(function(index, element) {
+		maximo = $("#tank" + (index+1) +" input[name=capacidad]").val();
+		critico = $("#tank" + (index+1) +" input[name=critico]").val();
+
+		console.log(maximo);
+		console.log(critico);
+		$( this ).visualize({type:"area", height:"250px", width:"700px", yrange:maximo});
+		
+		try {
+			actual = $('table[id ^= myTable]').find('tr:last').find('td:last')[index].innerHTML;
+			fecha = $('table[id ^= myTable]').find("tr").find("th[scope=col]:last")[index].innerHTML;
+		} catch(err) {
+			actual = 10;
+			fecha = "00:00 00/00/00";
+		}
+
+		$('#display' + (index+1)).industrial({});
+		$('#display' + (index+1)).industrial(actual);
+		$('#display' + (index+1)).css("font-size", "10px");
+
+		if (parseInt(actual) < parseInt(critico)) {
+			$('#display' + (index+1) + " > .meter").removeClass("green");
+			$('#display' + (index+1) + " > .meter").addClass("red");
+			$('#litros-form-' + (index+1)).addClass("has-error");
+		}
+
+		$("#btn"+(index+1)).click(function() {
+			$("#tank" + (index+1) + " :input").attr("disabled", false);
+		});
+
+	});
+
+	labels = document.getElementsByClassName("label");
+	for(j=0; j < labels.length; j++) {
+		if (labels[j].innerHTML .length == 14) {
+			labels[j].style.transform = "rotate(270deg)";
+			labels[j].style.marginTop = "4em";
+		}
+	}
+
+{% endblock %}

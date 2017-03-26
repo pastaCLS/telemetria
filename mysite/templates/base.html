@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Autobomba - {% block title %}{% endblock %}</title>
+
+<!--
+<link rel="icon" href="{{STATIC_URL}}img/favicon-64x64.png" type="image/x-icon">
+<link rel="shortcut icon" href="{{STATIC_URL}}img/favicon-64x64.png" type="image/x-icon">
+-->
+<link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet">
+<link href="{{STATIC_URL}}css/branding.css" rel="stylesheet">
+<link href="{{STATIC_URL}}css/glyphicons.css" rel="stylesheet">
+<script src="{{STATIC_URL}}js/jquery-1.11.2.min.js"></script>
+<script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+<script src="{{STATIC_URL}}js/bootstrap-dropdown.js"></script>
+
+{% block head-extras %}{% endblock %}
+</head>
+<body style="background:#222">
+<header>
+	<div style="background-color:white">
+		<div class="container">
+			<div class="navbar-header">
+					<button type="button" class="navbar-toggle collpased" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<a class="navbar-brand brand" href="#"><img class="img-responsive logo" src="{{STATIC_URL}}img/pump.gif"></a>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav navbar-right brand-nav">
+					<li>
+						<form method="POST" class="navbar-form" action="/buscar/">
+							<input type="text" class="form-control input-sm search-form" placeholder="Buscar...">
+						<a href="linkedin.com"><span class="iconbrand-in"></span></a>
+						<a href="facebook.com"><span class="iconbrand-fb"></span></a>
+						<a href="twitter.com"><span class="iconbrand-tw"></span></a>
+						</form>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+<nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"><img src="{{STATIC_URL}}img/brain.png"/></a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<small>
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Catalogo de productos<span class="caret"></span></a>
+			<ul id="product-list" class="dropdown-menu" role="menu">
+			</ul>
+</li>
+
+	<li>
+		<a href="#">
+			<span class="glyphicon glyphicon-earphone" style="position:relative; left: 2px; top: 2px;"></span>
+			<span style="margin-right: 5px;"> (011)4236-1401</span>
+			 |                 
+			<span class="glyphicon glyphicon-envelope" style="position:relative; left: 7px; top: 2px;"></span>
+			<span style="padding-left: 9px;"> info@bombitas.com.ar</span>
+		</a>
+	</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+			{% if user.is_authenticated %}
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> <strong style="padding-left:7px;">{{user.first_name|capfirst}} {{user.last_name|capfirst}}</strong> <span class="caret"></span></a>
+				<ul class="dropdown-menu" role="menu">
+					<li><a href="/privado">Mis tanques</a></li>
+					<li><a href="#">Mis datos</a></li>
+					<li class="divider"></li>
+					<li><a href="/cerrar">Salir</a></li>
+				</ul>
+			{% else %}
+				<a href="#myModal" role="button" data-toggle="modal">Acceso a usuarios</a>
+			{% endif %}
+				
+        </li>
+      </ul>
+	</small>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+</header>
+
+<div class="container">
+	{% block content %}
+	{% endblock %}
+</div>
+
+<div style="margin-top:53em">
+</div>
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Ingreso al sístema</h4>
+            </div>
+            <div class="modal-body">
+				<div class="alert alert-info">
+					<a href="#" class="close" data-dismiss="alert">&times;</a>
+    <strong>Aviso</strong> Esta zona provee acceso a la gestion de sus dispositivos. Para contratar nuestros servicios, vaya a nuestra area <a href="/comercial" class="alert-link">comercial</a>.
+				</div>
+				<form action="/entrar" method="post">{% csrf_token %}
+					{{formulario.as_p}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+				</form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("p input").addClass("form-control");
+
+		$.ajax({
+			type: "POST",
+			url: "/lista/productos.json",
+			data: {
+				csfrmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+			},
+			success: function(response) {
+				for (i=0; i < response.length; i++) {
+					$("#product-list").append("<li><a href='/producto/ver/"+response[i].pk+"'>"+ response[i].fields.nombre +"</a></li>");
+				}
+			},
+			error: function(xhr, textStatus, errorThrow) {
+				alert("Please report this error: "+errorThrow+xhr.status+xhr.responseText);
+			}
+		});
+
+		{% block javascript-extras %}{% endblock %}
+	});
+
+</script>
+</body>
+</html>

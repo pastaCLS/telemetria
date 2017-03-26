@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Aviso del servidor{% endblock %}
+
+{% block head-extras %}
+	<meta http-equiv="refresh" content="3;URL=http://jaguinaga.pythonanywhere.com/privado">
+{% endblock %}
+
+{% block content %}
+<a id="launcher" href="#modalMessage" style="display:none" role="button" data-toggle="modal">Launcher</a>
+<div id="modalMessage" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" arie-hidden="true">&times;</button>
+				<h4 class="modal-title">Aviso del servidor</h4>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-success">
+					<a href="#" class="close" data-dismiss="alert">&times;</a>
+{% block message %}
+{% endblock %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block javascript-extras %}
+	$("#launcher").trigger("click");
+{% endblock %}

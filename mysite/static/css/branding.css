@@ -1,0 +1,45 @@
+[class^="iconbrand-"],
+[class*=" iconbrand-"] {
+	background-image: url("../img/brand/brand.png");
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	display: inline-block;
+	height: 23px;
+	line-height: 23px;
+	vertical-align: text-top;
+	width: 22px;
+}
+
+.iconbrand-tw { background-position: 0 0 }
+.iconbrand-fb { background-position: 0px -23px }
+.iconbrand-in { background-position: 0px -46px }
+.iconbrand-tw:hover { background-position: -21px 0 }
+.iconbrand-fb:hover { background-position: -22px -23px }
+.iconbrand-in:hover { background-position: -22px -46px }
+
+.brand,
+.brand-nav li a {
+    line-height: 150px;
+    height: 150px;
+    padding-top: 0;
+	padding: 2px;
+}
+
+.brand-nav li a:nth-child(2) {
+	padding-left: 25px;
+}
+
+.search-form {
+	width: 270px !important;
+	border-radius: 14px;
+}
+
+.logo {
+	margin-top:20px;
+	width: 120px;
+	height: auto;
+}
+
+.custom-navbar {
+	margin-bottom: 0 !important;
+}

@@ -1,0 +1,128 @@
+@font-face
+{
+    font-family: "Ubuntu";
+    src: url("../fonts/ubuntu-c-webfont.eot");
+    src: url("../fonts/ubuntu-c-webfont.eot") format("embedded-opentype"),
+         url("../fonts/ubuntu-c-webfont.woff") format("woff"),
+         url("../fonts/ubuntu-c-webfont.ttf") format("truetype"),
+         url("../fonts/ubuntu-c-webfont.svg#ubuntu_condensedregular") format("svg");
+}
+
+#marco {
+    /*definimos los contadores de imagenes*/
+    counter-reset: section;
+    counter-reset: subsection;
+}
+
+.page {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;    
+
+    border: 1px solid #898C95;
+    background: white;
+    margin-top: 6px; /*si vamos a apilar tengo que sacar esto*/
+
+    /*contadores, section es incrementado en cada hoja*/
+    counter-increment: section;
+}
+
+.page:nth-child(odd) { /*hoja par*/
+    padding-left: 70px;
+    padding-right: 20px;
+}
+
+.page:nth-child(even) { /*hoja impar*/
+    padding-left: 20px;
+    padding-right: 70px;
+}
+
+.page #logo {
+    float: right;
+    width: 250px;
+    height: auto;
+}
+
+.page #_topic {
+    color:red;
+}
+    
+/*body*/
+.page .body {
+    font-family: Ubuntu;
+    font-size: 8pt;
+    /*3 columnas*/
+    -webkit-column-count: 3;
+    -webkit-column-gap: 40px;
+    -webkit-column-rule: 1px solid #FFF;
+    -moz-column-count: 3;
+    -moz-column-gap: 40px;
+    -moz-column-rule: 1px solid #FFF;
+}
+
+.page .body:last-child:not(:first-child) {
+    /*solo al primer elemento le hace margin
+     *para separarlo del titulo*/
+    margin-top: 50px;
+}
+
+.page .body .subtitle {
+    font-family: Ubuntu;
+    font-size: 9pt;
+    font-weight: bold;
+
+    /*margenes para subtitulos*/
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+
+.page .body > ul {
+    list-style: square;
+}
+
+.page .body > .epigraph {
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+    text-align: center
+}
+
+.page .body > .epigraph > img {
+    border: 1px solid #898C95;
+    /*incrementa la subimagen*/
+    counter-increment: subsection;
+}
+
+.page .body > .epigraph globe:before {
+    content: "Imagen " counter(section) "." counter(subsection) ": ";
+}
+
+.page .body > img {
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+    border: 1px solid #898C95;
+    display: block;
+    /*center*/
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page table {
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page table tr {
+    border: 2px solid black;
+}
+
+.page table tr td {
+    background: #767676;
+}
+.page table tr .tab {
+    padding-left: 3em;
+}
