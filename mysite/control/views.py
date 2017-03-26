@@ -46,14 +46,23 @@ def cerrar(request):
 def administracion(request):
 	tanques = Tanque.objects.filter(usuario=request.user)
 	lecturas = []
+    paso = 25
 	for i in tanques:
 	    counter = Lectura.objects.filter(lector=Lector.objects.get(tanque=i)).count()
-	    if counter <= 25:
-	        lecturas.append(Lectura.objects.filter(lector=Lector.objects.get(tanque=i)))
-        else:
-		    lecturas.append(Lectura.objects.filter(lector=Lector.objects.get(tanque=i))[counter-25:])#[:15])
+        desde = request.GET.get("desde")
+        hasta = request.GET.get("hasta")
+        if not desde or not hasta:
+            # por default muestra las ultimas 25
+            desde = counter-paso
+            hasta = counter
 
-	return render_to_response('panel.html', {'tanques': tanques, 'lecturas_tanque': lecturas}, context_instance=RequestContext(request))
+            if desde < 0 or hasta > counter:
+                desde = 0
+                hasta = paso
+
+		lecturas.append(Lectura.objects.filter(lector=Lector.objects.get(tanque=i))[desde:hasta])
+
+	return render_to_response('panel.html', {'tanques': tanques, 'lecturas_tanque': lecturas, 'desde': desde, 'hasta': hasta, 'paso': paso}, context_instance=RequestContext(request))
 
 @csrf_exempt
 def parser(request):
